@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MER Hero Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  body { cursor: auto; }
+  .concept { position: relative; height: 100vh; min-height: 640px; overflow: hidden; background: var(--night); border-bottom: 2px solid #000; }
+  .tagc { position: absolute; z-index: 20; top: 92px; right: 24px; font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; background: #fff; color: var(--ink); padding: 8px 14px; border-radius: 99px; }
+  .tagc b { color: var(--purple); }
+  .fake-header { position: absolute; z-index: 15; top: 0; left: 0; right: 0; height: 76px; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--gutter); }
+  .fake-header img { height: 30px; }
+  .fake-header nav { display: flex; gap: 30px; align-items: center; font-size: .95rem; color: rgba(255,255,255,.85); }
+  .fake-header .pill { background: var(--purple); color: #fff; padding: 10px 20px; border-radius: 99px; }
+  .light .fake-header nav { color: var(--ink); }
+  .btnrow { display: flex; gap: 12px; flex-wrap: wrap; }
+  .b1, .b2 { display: inline-flex; align-items: center; gap: 12px; padding: 14px 24px; border-radius: 99px; font-weight: 500; }
+  .b1 { background: var(--purple); color: #fff; } .b2 { border: 1px solid currentColor; }
+
+  /* ---------- 1. Core Pixel ---------- */
+  .c1 .grid { position: absolute; left: 50%; top: 50%; transform: translate(-8%, -66%); display: grid; grid-template-columns: repeat(5, min(8vh, 72px)); gap: min(1.4vh, 12px); }
+  .c1 .grid i { aspect-ratio: 1; background: #fff; animation: float1 6s ease-in-out infinite; }
+  .c1 .grid i.e { background: transparent; animation: none; }
+  .c1 .grid i.c { background: var(--purple); box-shadow: 0 0 60px rgba(123,77,255,.9); }
+  .c1 .grid i:nth-child(3n) { animation-delay: -2s; } .c1 .grid i:nth-child(4n) { animation-delay: -4s; }
+  @keyframes float1 { 50% { transform: translateY(-8px); } }
+  .c1 .bits i { position: absolute; width: 14px; height: 14px; background: #2C2836; }
+  .c1 .bits i.p { background: var(--purple); }
+  .c1 .bottom { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 44px; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
+  .c1 h1 { font-family: var(--f-display); font-weight: 700; text-transform: uppercase; font-size: clamp(2rem, 4.2vw, 4rem); line-height: 1; letter-spacing: -.035em; max-width: 13ch; }
+  .c1 h1 span { color: var(--purple); }
+  .c1 .side { max-width: 330px; color: var(--muted); display: grid; gap: 20px; }
+
+  /* ---------- 2. Grainy Orbit ---------- */
+  .c2 .glow { position: absolute; left: 50%; top: 50%; width: 46vh; height: 46vh; margin: -23vh 0 0 -23vh; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #C9B8FF, #7B4DFF 35%, #3A1E9E 70%, #120A2E); box-shadow: 0 0 160px 30px rgba(123,77,255,.45); overflow: hidden; }
+  .c2 .glow::after { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); mix-blend-mode: overlay; }
+  .c2 .orbit { position: absolute; left: 50%; top: 50%; border: 1px dashed rgba(255,255,255,.12); border-radius: 50%; animation: spin 40s linear infinite; }
+  .c2 .orbit.o1 { width: 70vh; height: 70vh; margin: -35vh 0 0 -35vh; }
+  .c2 .orbit.o2 { width: 104vh; height: 104vh; margin: -52vh 0 0 -52vh; animation-duration: 70s; animation-direction: reverse; }
+  .c2 .orbit .sphere { top: -5vh; left: 50%; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .c2 .center { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; z-index: 5; padding: 0 var(--gutter); }
+  .c2 h1 { font-family: var(--f-display); font-weight: 700; text-transform: uppercase; font-size: clamp(2.4rem, 6vw, 6rem); line-height: .98; letter-spacing: -.04em; mix-blend-mode: difference; }
+  .c2 .sub { margin: 22px auto 28px; color: rgba(255,255,255,.75); max-width: 44ch; }
+  .c2 .btnrow { justify-content: center; }
+
+  /* ---------- 3. Showreel Split ---------- */
+  .c3 .wrap { position: absolute; inset: 76px var(--gutter) 70px; display: grid; grid-template-columns: 1fr 1.05fr; gap: 40px; align-items: center; }
+  .c3 h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(2.2rem, 4.6vw, 4.6rem); line-height: 1.02; letter-spacing: -.035em; }
+  .c3 h1 .hl::before { transform: none; }
+  .c3 p { color: var(--muted); margin: 22px 0 30px; max-width: 42ch; font-size: 1.1rem; }
+  .c3 .stack { position: relative; height: 72vh; perspective: 1400px; }
+  .c3 .card3 { position: absolute; border-radius: 26px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 50px 90px -40px rgba(0,0,0,.9); }
+  .c3 .card3 .mock { position: absolute; inset: 0; }
+  .c3 .k1 { width: 64%; aspect-ratio: 4/3; left: 4%; top: 6%; transform: rotateY(18deg) rotateZ(-4deg); }
+  .c3 .k2 { width: 34%; aspect-ratio: 9/16; right: 6%; top: 0; transform: rotateY(-14deg) rotateZ(5deg); z-index: 2; }
+  .c3 .k3 { width: 52%; aspect-ratio: 16/10; left: 24%; bottom: 0; transform: rotateX(10deg) rotateZ(2deg); z-index: 3; }
+  .c3 .chip { position: absolute; z-index: 4; font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; background: #fff; color: var(--ink); padding: 7px 12px; border-radius: 99px; }
+  .c3 .ticker { position: absolute; left: 0; right: 0; bottom: 0; height: 56px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 40px; padding: 0 var(--gutter); font-family: var(--f-display); font-weight: 600; color: #5E586C; white-space: nowrap; overflow: hidden; }
+  .c3 .ticker b { color: var(--purple); }
+
+  /* ---------- 4. Giant Wordmark ---------- */
+  .c4 { background: var(--paper); color: var(--ink); }
+  .c4 .top { position: absolute; left: var(--gutter); right: var(--gutter); top: 120px; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+  .c4 h1 { font-family: var(--f-display); font-weight: 600; font-size: clamp(1.8rem, 3.6vw, 3.4rem); line-height: 1.08; letter-spacing: -.03em; max-width: 18ch; }
+  .c4 h1 .rot { display: inline-block; background: var(--purple); color: #fff; padding: 0 .25em; border-radius: .2em; }
+  .c4 .meta { max-width: 300px; color: var(--muted-ink); display: grid; gap: 18px; }
+  .c4 .mark { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 36px; }
+  .c4 .mark svg { width: 100%; height: auto; }
+  .c4 .badge { position: absolute; z-index: 3; right: calc(var(--gutter) + 6%); bottom: 34%; width: 130px; height: 130px; border-radius: 50%; background: var(--night); color: #fff; display: grid; place-items: center; text-align: center; font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; animation: spin 18s linear infinite; }
+</style>
+</head>
+<body>
+
+<!-- 1. CORE PIXEL -->
+<section class="concept c1">
+  <div class="fake-header"><img src="assets/brand/mer-logo-horizontal-for-dark-bg.svg" alt=""><nav><span>Services</span><span>Process</span><span>Work</span><span class="pill">Start a project</span></nav></div>
+  <span class="tagc">Concept <b>01</b> · Core Pixel</span>
+  <div class="bits" aria-hidden="true">
+    <i style="left:12%;top:24%"></i><i class="p" style="left:20%;top:62%"></i><i style="left:30%;top:16%"></i><i style="left:78%;top:28%"></i><i class="p" style="left:86%;top:58%"></i><i style="left:70%;top:72%"></i><i style="left:8%;top:44%"></i><i style="left:92%;top:40%"></i>
+  </div>
+  <div class="grid"><i></i><i class="e"></i><i class="e"></i><i class="e"></i><i></i><i></i><i></i><i class="e"></i><i></i><i></i><i></i><i class="e"></i><i class="c"></i><i class="e"></i><i></i><i></i><i class="e"></i><i class="e"></i><i class="e"></i><i></i><i></i><i class="e"></i><i class="e"></i><i class="e"></i><i></i></div>
+  <div class="bottom">
+    <h1>We build <span>digital</span> products that <span>grow</span>.</h1>
+    <div class="side"><p>Your logo, built live: on load the squares fly in and form the M. Move the mouse and they push away, then snap back.</p><div class="btnrow"><span class="b1">Start a project ↗</span><span class="b2">See work</span></div></div>
+  </div>
+</section>
+
+<!-- 2. GRAINY ORBIT -->
+<section class="concept c2">
+  <div class="fake-header"><img src="assets/brand/mer-logo-horizontal-for-dark-bg.svg" alt=""><nav><span>Services</span><span>Process</span><span>Work</span><span class="pill">Start a project</span></nav></div>
+  <span class="tagc">Concept <b>02</b> · Grainy Orbit</span>
+  <div class="orbit o2"><span class="sphere" style="width:9vh;aspect-ratio:1"></span></div>
+  <div class="orbit o1"><span class="sphere" style="width:13vh;aspect-ratio:1"></span></div>
+  <div class="glow"></div>
+  <div class="center"><div>
+    <h1>Small pixels.<br>Big ideas.</h1>
+    <p class="sub">A creative &amp; digital studio for startups and growing brands. Websites, apps, brands and content that grow.</p>
+    <div class="btnrow"><span class="b1">Start a project ↗</span><span class="b2">See work</span></div>
+  </div></div>
+</section>
+
+<!-- 3. SHOWREEL SPLIT -->
+<section class="concept c3">
+  <div class="fake-header"><img src="assets/brand/mer-logo-horizontal-for-dark-bg.svg" alt=""><nav><span>Services</span><span>Process</span><span>Work</span><span class="pill">Start a project</span></nav></div>
+  <span class="tagc">Concept <b>03</b> · Showreel Split</span>
+  <div class="wrap">
+    <div>
+      <span class="label" style="color:#fff">Creative &amp; Digital Studio</span>
+      <h1 style="margin-top:24px">Websites, apps &amp; content that <span class="hl">sell</span>.</h1>
+      <p>Strategy, design, code and video under one roof. We turn ideas into products your customers love.</p>
+      <div class="btnrow"><span class="b1">Start a project ↗</span><span class="b2">See work</span></div>
+    </div>
+    <div class="stack">
+      <div class="card3 k1"><div class="mock mock--a"><div class="mock__browser"><div class="mock__bar"><i></i><i></i><i></i></div><div class="mock__page"><div class="mock__line mock__line--h"></div><div class="mock__line" style="width:85%"></div><div class="mock__line mock__line--p"></div><div class="mock__row"><i></i><i></i><i></i></div></div></div></div></div>
+      <div class="card3 k2"><div class="mock mock--a" style="background:linear-gradient(180deg,#B9A6FF,#5A2FE0 70%,#2A1A5E)"><div class="mock__ugc" style="position:absolute;inset:0;background:none"><span class="play"></span><span class="heart"></span></div></div></div>
+      <div class="card3 k3"><div class="mock mock--d"><div class="mock__video"><span class="play"></span><span class="bar"><i></i></span></div></div></div>
+      <span class="chip" style="left:2%;bottom:30%">Web App</span><span class="chip" style="right:2%;top:58%">UGC Ad</span><span class="chip" style="left:30%;bottom:-2%">AI Video</span>
+    </div>
+  </div>
+  <div class="ticker"><span><b>■</b> Web Design</span><span><b>■</b> Shopify</span><span><b>■</b> Branding</span><span><b>■</b> Mobile Apps</span><span><b>■</b> AI Video Editing</span><span><b>■</b> UGC Production</span><span><b>■</b> Photo Shoots</span><span><b>■</b> SEO</span></div>
+</section>
+
+<!-- 4. GIANT WORDMARK -->
+<section class="concept c4 light">
+  <div class="fake-header"><img src="assets/brand/mer-logo-horizontal-for-light-bg.svg" alt=""><nav><span>Services</span><span>Process</span><span>Work</span><span class="pill">Start a project</span></nav></div>
+  <span class="tagc" style="background:var(--night);color:#fff">Concept <b>04</b> · Giant Wordmark</span>
+  <div class="top">
+    <h1>We design &amp; build <span class="rot">websites</span> for brands that want to grow.</h1>
+    <div class="meta"><p>The purple word keeps changing: websites → brands → apps → videos → UGC. The huge MER rises up from the bottom as you scroll.</p><div class="btnrow"><span class="b1">Start a project ↗</span></div></div>
+  </div>
+  <div class="badge">· START A ·<br>PROJECT<br>· TODAY ·</div>
+  <div class="mark">
+    <svg viewBox="0 0 202 60" fill="currentColor"><defs><linearGradient id="g4" x1="0" x2="1"><stop offset="0" stop-color="#121016"/><stop offset=".55" stop-color="#121016"/><stop offset=".56" stop-color="#7B4DFF"/><stop offset="1" stop-color="#5A2FE0"/></linearGradient></defs>
+      <g fill="url(#g4)"><path d="M0 60V0h16l16 22L48 0h16v60H50V24L32 46 14 24v36z"/><path transform="translate(74 0)" d="M0 0h44v14H14v9h26v14H14v9h30v14H0z"/><path transform="translate(128 0)" fill-rule="evenodd" d="M0 0h36l14 14v12l-10 8 10 26H35l-8-23H14v23H0z M14 14v11h18l4-3.5v-4L32 14z"/></g>
+      <rect x="188" y="46" width="14" height="14" fill="#7B4DFF"/></svg>
+  </div>
+</section>
+
+</body>
+</html>

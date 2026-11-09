@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MER Hero 3D Preview</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/brand/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  :root { --accent: #7B4DFF; --accent-rgb: 123,77,255; }
+  body { background: #0B0A0E; }
+  .hero3d { position: relative; height: 100vh; min-height: 640px; overflow: hidden; isolation: isolate;
+    background:
+      radial-gradient(60% 70% at 72% 45%, rgba(var(--accent-rgb), .28), transparent 60%),
+      radial-gradient(40% 50% at 10% 100%, rgba(var(--accent-rgb), .14), transparent 70%),
+      linear-gradient(180deg, #0E0C13 0%, #0B0A0E 100%); }
+  #scene { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+  .h3-grain { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .h3-lines { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .5;
+    background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 80px 80px; mask-image: radial-gradient(70% 70% at 70% 45%, #000, transparent 75%); -webkit-mask-image: radial-gradient(70% 70% at 70% 45%, #000, transparent 75%); }
+
+  /* Header */
+  .h3-header { position: absolute; z-index: 10; top: 0; left: 0; right: 0; height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--gutter); }
+  .h3-header img { height: 30px; }
+  .h3-header nav { display: flex; gap: 34px; align-items: center; font-size: .95rem; color: rgba(255,255,255,.8); }
+  .h3-header .cta { background: var(--accent); color: #fff; padding: 11px 20px; border-radius: 99px; box-shadow: 0 10px 30px -8px rgba(var(--accent-rgb), .7); }
+
+  /* Copy */
+  .h3-copy { position: absolute; z-index: 5; left: var(--gutter); top: 50%; transform: translateY(-54%); width: min(640px, 50vw); }
+  .h3-badge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border-radius: 99px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(10px); font-size: .85rem; color: rgba(255,255,255,.85); }
+  .h3-badge b { background: var(--accent); color: #fff; font-family: var(--f-mono); font-size: .68rem; letter-spacing: .1em; padding: 5px 9px; border-radius: 99px; font-weight: 500; }
+  .h3-title { font-family: var(--f-display); font-weight: 800; font-size: min(clamp(2.4rem, 4.8vw, 5rem), 8.6vh); line-height: .98; letter-spacing: -.045em; text-transform: uppercase; margin: 26px 0 0; }
+  .h3-title .line { display: block; overflow: hidden; padding-bottom: .04em; }
+  .h3-title .line > span { display: inline-block; }
+  .h3-title .outline { -webkit-text-stroke: 1.5px rgba(255,255,255,.85); color: transparent; }
+  .rotator { display: inline-flex; position: relative; height: 1.02em; overflow: hidden; vertical-align: bottom; background: var(--accent); color: #fff; border-radius: .14em; padding: 0 .18em; box-shadow: 0 20px 60px -20px rgba(var(--accent-rgb), .9); }
+  .rotator span { display: block; line-height: 1.02em; white-space: nowrap; }
+  .rotator .track { display: flex; flex-direction: column; align-items: flex-start; }
+  .h3-sub { color: rgba(255,255,255,.66); font-size: clamp(1rem, 1.25vw, 1.2rem); max-width: 44ch; margin: min(26px, 3vh) 0 min(34px, 4vh); }
+  .h3-ctas { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .h3-ctas .btn { --btn-bg: var(--accent); }
+  .h3-ctas .btn:hover .btn__icon { background: var(--accent); }
+  .h3-proof { display: flex; align-items: center; gap: 14px; color: rgba(255,255,255,.6); font-size: .85rem; }
+  .h3-proof .dots { display: flex; }
+  .h3-proof .dots i { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #0B0A0E; margin-left: -8px; background: linear-gradient(135deg, #fff, var(--accent)); }
+  .h3-proof .dots i:first-child { margin-left: 0; background: linear-gradient(135deg, var(--accent), #121016); }
+  .h3-proof .dots i:nth-child(3) { background: linear-gradient(135deg, #2EE6D6, #121016); }
+
+  /* Floating glass chips around the 3D object */
+  .h3-chips { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+  .chip3 { position: absolute; display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 10px; border-radius: 16px;
+    background: rgba(20,18,26,.55); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    color: #fff; font-size: .88rem; box-shadow: 0 20px 50px -20px rgba(0,0,0,.8); animation: bob 6s ease-in-out infinite; }
+  .chip3 i { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(var(--accent-rgb), .25); color: #fff; font-style: normal; font-size: 1rem; }
+  .chip3 small { display: block; color: rgba(255,255,255,.55); font-size: .72rem; }
+  .chip3.c1 { right: 37%; top: 17%; }
+  .chip3.c2 { right: 5%; top: 30%; animation-delay: -2s; }
+  .chip3.c3 { right: 34%; bottom: 17%; animation-delay: -4s; }
+  .chip3.c4 { right: 6%; bottom: 26%; animation-delay: -3s; }
+  @keyframes bob { 50% { transform: translateY(-12px); } }
+
+  /* Bottom bar */
+  .h3-bottom { position: absolute; z-index: 5; left: var(--gutter); right: var(--gutter); bottom: 28px; display: flex; justify-content: space-between; align-items: center; gap: 20px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 20px; }
+  .h3-services { display: flex; gap: 22px; flex-wrap: wrap; font-family: var(--f-mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+  .h3-services span::before { content: ""; display: inline-block; width: 6px; height: 6px; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+  .h3-scroll { display: flex; align-items: center; gap: 12px; font-family: var(--f-mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .h3-scroll .mouse { width: 22px; height: 34px; border: 1.5px solid rgba(255,255,255,.5); border-radius: 12px; position: relative; }
+  .h3-scroll .mouse::after { content: ""; position: absolute; left: 50%; top: 7px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: var(--accent); animation: wheel 1.6s ease-in-out infinite; }
+  @keyframes wheel { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(10px); } }
+
+  /* Color switcher (preview only) */
+  .switcher { position: fixed; z-index: 50; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 99px; background: rgba(255,255,255,.95); color: var(--ink); font-size: .8rem; font-family: var(--f-mono); box-shadow: 0 20px 50px -20px rgba(0,0,0,.6); }
+  .switcher button { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; }
+  .switcher button.on { border-color: var(--ink); }
+
+  .after { min-height: 120vh; background: var(--paper); color: var(--ink); display: grid; place-items: center; text-align: center; padding: 80px 20px; }
+  .after h2 { font-family: var(--f-display); font-size: clamp(1.6rem, 3vw, 2.6rem); letter-spacing: -.03em; }
+  .after p { color: var(--muted-ink); margin-top: 10px; }
+
+  @media (max-width: 999px) {
+    .h3-header nav span:not(.cta) { display: none; }
+    .h3-copy { width: auto; right: var(--gutter); top: auto; bottom: 96px; transform: none; }
+    .h3-title { font-size: clamp(2.3rem, 11vw, 3.4rem); }
+    .h3-sub { margin: 18px 0 24px; }
+    .h3-proof { display: none; }
+    .chip3 { display: none; }
+    .chip3.c2 { right: 4%; top: 15%; } .chip3.c4 { right: auto; left: 4%; top: 30%; bottom: auto; }
+    .h3-services { display: none; }
+    .h3-bottom { border: 0; justify-content: center; bottom: 70px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero3d">
+  <div class="h3-lines" aria-hidden="true"></div>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="h3-grain" aria-hidden="true"></div>
+
+  <header class="h3-header">
+    <img src="assets/brand/mer-logo-horizontal-for-dark-bg.svg" alt="MER">
+    <nav><span>Services</span><span>Process</span><span>Work</span><span>FAQ</span><span class="cta">Start a project ↗</span></nav>
+  </header>
+
+  <div class="h3-chips" aria-hidden="true">
+    <div class="chip3 c1"><i>◧</i><div>UI/UX Design<small>Figma → code</small></div></div>
+    <div class="chip3 c2"><i>▶</i><div>AI Video Editing<small>Reels · Ads</small></div></div>
+    <div class="chip3 c3"><i>⌘</i><div>Web &amp; Apps<small>Next.js · Shopify</small></div></div>
+    <div class="chip3 c4"><i>✦</i><div>UGC &amp; Photo<small>Content that sells</small></div></div>
+  </div>
+
+  <div class="h3-copy">
+    <span class="h3-badge"><b>NEW</b> Now offering AI video &amp; UGC production</span>
+    <h1 class="h3-title">
+      <span class="line"><span>We build</span></span>
+      <span class="line"><span class="rotator"><span class="track"><span>Websites</span><span>Brands</span><span>Apps</span><span>AI Videos</span><span>UGC Ads</span><span>Websites</span></span></span></span>
+      <span class="line"><span>that <span class="outline">grow</span></span></span>
+      <span class="line"><span>your business.</span></span>
+    </h1>
+    <p class="h3-sub">MER is a creative &amp; digital studio. Strategy, design, code and content under one roof, built to bring you customers.</p>
+    <div class="h3-ctas">
+      <a class="btn" href="index.html#contact"><span class="btn__label"><span>Start a project</span><span aria-hidden="true">Start a project</span></span><span class="btn__icon"><svg viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3v8" stroke="currentColor" stroke-width="1.6"/></svg><svg viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H5M13 3v8" stroke="currentColor" stroke-width="1.6"/></svg></span></a>
+      <div class="h3-proof"><span class="dots"><i></i><i></i><i></i></span><span>Free first call ·<br>Reply within 24h</span></div>
+    </div>
+  </div>
+
+  <div class="h3-bottom">
+    <div class="h3-services"><span>Web Design</span><span>Shopify</span><span>Branding</span><span>Apps</span><span>AI Video</span><span>UGC</span><span>Photo Shoots</span></div>
+    <div class="h3-scroll"><span class="mouse"></span>Scroll to explore</div>
+  </div>
+</section>
+
+<section class="after">
+  <div><h2>↑ Scroll up and down to see the cubes split apart and come back.</h2><p>Move the mouse over the 3D logo: it turns to follow you, and cubes pop forward on hover.</p></div>
+</section>
+
+<div class="switcher">Accent:
+  <button class="on" style="background:#7B4DFF" data-c="#7B4DFF" aria-label="Purple"></button>
+  <button style="background:#3D6BFF" data-c="#3D6BFF" aria-label="Blue"></button>
+  <button style="background:#C6F432" data-c="#C6F432" aria-label="Lime"></button>
+  <button style="background:#FF5A1F" data-c="#FF5A1F" aria-label="Orange"></button>
+  <button style="background:#2EE6D6" data-c="#2EE6D6" aria-label="Cyan"></button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+gsap.registerPlugin(ScrollTrigger);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let accent = new THREE.Color("#7B4DFF");
+
+/* ---------- Text intro ---------- */
+gsap.from(".h3-title .line > span", { yPercent: 110, duration: 1.3, ease: "expo.out", stagger: 0.1, delay: 0.3 });
+gsap.from(".h3-badge, .h3-sub, .h3-ctas, .h3-bottom", { y: 30, opacity: 0, duration: 1.2, ease: "expo.out", stagger: 0.1, delay: 0.6 });
+gsap.from(".chip3", { scale: 0.6, opacity: 0, duration: 1, ease: "back.out(2)", stagger: 0.15, delay: 1.6 });
+
+// Rotating word in the purple pill
+const track = document.querySelector(".rotator .track");
+const rotator = document.querySelector(".rotator");
+const items = [...track.children];
+const words = items.length - 1; // last item repeats the first for a seamless loop
+const widthFor = (i) => items[i].getBoundingClientRect().width + rotator.offsetHeight * 0.36;
+const rot = gsap.timeline({ repeat: -1, delay: 2.4, paused: true });
+for (let i = 1; i <= words; i++) {
+  rot.to(track, { yPercent: -(100 / (words + 1)) * i, duration: 0.75, ease: "expo.inOut" }, "+=1.5");
+  rot.to(rotator, { width: () => widthFor(i % words), duration: 0.75, ease: "expo.inOut" }, "<");
+}
+rot.set(track, { yPercent: 0 });
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { gsap.set(rotator, { width: widthFor(0) }); rot.play(); });
+
+// Hero copy drifts and fades on scroll
+gsap.to(".h3-copy, .h3-bottom", { y: -80, opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero3d", start: "top top", end: "60% top", scrub: true } });
+gsap.to(".h3-chips", { y: -140, opacity: 0, ease: "none", scrollTrigger: { trigger: ".hero3d", start: "top top", end: "50% top", scrub: true } });
+
+/* ---------- 3D scene ---------- */
+const canvas = document.getElementById("scene");
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+} catch (e) { canvas.remove(); }
+
+if (renderer) {
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  const scene = new THREE.Scene();
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  camera.position.set(0, 0, 18);
+
+  const root = new THREE.Group(); scene.add(root);
+  const logo = new THREE.Group(); root.add(logo);
+
+  // Materials
+  const white = new THREE.MeshPhysicalMaterial({ color: 0xEEECF4, roughness: 0.3, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.12 });
+  const dark = new THREE.MeshPhysicalMaterial({ color: 0x1E1B26, roughness: 0.35, metalness: 0.3, clearcoat: 1, clearcoatRoughness: 0.2 });
+  const glow = new THREE.MeshPhysicalMaterial({ color: accent, emissive: accent, emissiveIntensity: 1.6, roughness: 0.2, clearcoat: 1 });
+
+  // The pixel M, made of rounded cubes
+  const GRID = ["X...X", "XX.XX", "X.A.X", "X...X", "X...X"];
+  const geo = new RoundedBoxGeometry(0.94, 0.94, 0.94, 5, 0.14);
+  const cubes = [];
+  GRID.forEach((row, r) => [...row].forEach((ch, c) => {
+    if (ch === ".") return;
+    const m = new THREE.Mesh(geo, ch === "A" ? glow : white);
+    const home = new THREE.Vector3((c - 2) * 1.06, (2 - r) * 1.06, 0);
+    const dir = home.clone().add(new THREE.Vector3((Math.random() - .5) * 2, (Math.random() - .5) * 2, 2 + Math.random() * 3)).normalize();
+    m.userData = { home, dir, p: new THREE.Vector3(), pop: 0, popTarget: 0, spin: new THREE.Vector3(Math.random(), Math.random(), Math.random()).multiplyScalar(2), core: ch === "A" };
+    // Start scattered for the intro
+    m.userData.p.set((Math.random() - .5) * 26, (Math.random() - .5) * 16, -6 - Math.random() * 10);
+    m.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
+    m.scale.setScalar(0.001);
+    logo.add(m); cubes.push(m);
+  }));
+
+  // Glow light inside the core
+  const coreLight = new THREE.PointLight(accent, 40, 9, 2);
+  coreLight.position.set(0, 0, 1.4); logo.add(coreLight);
+
+  // Floating particle cubes
+  const pGeo = new RoundedBoxGeometry(1, 1, 1, 2, 0.18);
+  const particles = [];
+  for (let i = 0; i < 46; i++) {
+    const mat = Math.random() < 0.18 ? glow : (Math.random() < 0.5 ? dark : white);
+    const p = new THREE.Mesh(pGeo, mat);
+    const s = 0.12 + Math.random() * 0.38;
+    p.scale.setScalar(s);
+    p.position.set((Math.random() - .5) * 30, (Math.random() - .5) * 15 - 1, -11 + Math.random() * 8);
+    p.userData = { base: p.position.clone(), sp: 0.2 + Math.random() * 0.6, ph: Math.random() * 6 };
+    scene.add(p); particles.push(p);
+  }
+
+  // Lights
+  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  const key = new THREE.DirectionalLight(0xffffff, 1.8); key.position.set(6, 8, 10); scene.add(key);
+  const rim = new THREE.PointLight(accent, 120, 40, 2); rim.position.set(-6, -4, -5); scene.add(rim);
+  const fill = new THREE.PointLight(0x8899ff, 30, 30, 2); fill.position.set(8, -6, 6); scene.add(fill);
+
+  // Layout: logo on the right on desktop, above text on mobile
+  let isMobile = false;
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    isMobile = w < 1000;
+    const visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const visW = visH * camera.aspect;
+    if (isMobile) { root.position.set(0, visH * 0.29, 0); root.scale.setScalar(Math.min(0.42, visW / 12)); }
+    else { root.position.set(visW * 0.2, 0.2, 0); root.scale.setScalar(1); }
+  }
+  new ResizeObserver(resize).observe(canvas); resize();
+
+  // Intro: cubes fly in and assemble
+  cubes.forEach((m, i) => {
+    const d = 0.5 + i * 0.07 + (m.userData.core ? 0.4 : 0);
+    gsap.to(m.userData.p, { x: m.userData.home.x, y: m.userData.home.y, z: 0, duration: 2.2, ease: "expo.out", delay: d });
+    gsap.to(m.rotation, { x: 0, y: 0, z: 0, duration: 2.4, ease: "expo.out", delay: d });
+    gsap.to(m.scale, { x: 1, y: 1, z: 1, duration: 1.4, ease: "back.out(1.6)", delay: d });
+  });
+  gsap.from(coreLight, { intensity: 0, duration: 2, delay: 1.8 });
+
+  // Scroll: cubes split apart
+  let explode = 0;
+  ScrollTrigger.create({ trigger: ".hero3d", start: "top top", end: "bottom top", scrub: true, onUpdate: (s) => (explode = s.progress) });
+
+  // Mouse: tilt + hover pop
+  const mouse = new THREE.Vector2(0, 0), ndc = new THREE.Vector2(-9, -9);
+  const ray = new THREE.Raycaster();
+  addEventListener("pointermove", (e) => {
+    mouse.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  });
+
+  let visible = true;
+  new IntersectionObserver(([en]) => (visible = en.isIntersecting)).observe(canvas);
+
+  const clock = new THREE.Clock();
+  const tmp = new THREE.Vector3();
+  function frame() {
+    requestAnimationFrame(frame);
+    if (!visible) return;
+    const t = clock.getElapsedTime();
+
+    // Tilt toward pointer + idle sway
+    const ty = mouse.x * 0.55 + Math.sin(t * 0.5) * 0.12;
+    const tx = -mouse.y * 0.35 + Math.cos(t * 0.4) * 0.06;
+    logo.rotation.y += (ty - logo.rotation.y) * 0.05;
+    logo.rotation.x += (tx - logo.rotation.x) * 0.05;
+    logo.position.y = Math.sin(t * 0.9) * 0.18;
+
+    // Hover pop
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(cubes, false)[0];
+    cubes.forEach((m) => (m.userData.popTarget = hit && hit.object === m ? 1 : 0));
+
+    const ex = reduce ? 0 : explode;
+    cubes.forEach((m, i) => {
+      const u = m.userData;
+      u.pop += (u.popTarget - u.pop) * 0.12;
+      tmp.copy(u.p).addScaledVector(u.dir, ex * 9);
+      tmp.z += u.pop * 0.9 + (u.core ? Math.sin(t * 2) * 0.08 : 0);
+      m.position.copy(tmp);
+      if (ex > 0.001) { m.rotation.x = u.spin.x * ex * 3; m.rotation.y = u.spin.y * ex * 3; }
+      else if (u.pop > 0.01) { m.rotation.y = u.pop * 0.5; }
+    });
+    coreLight.intensity = 30 + Math.sin(t * 2) * 10;
+
+    particles.forEach((p) => {
+      const u = p.userData;
+      p.position.y = u.base.y + Math.sin(t * u.sp + u.ph) * 0.6 + explode * 4 * u.sp;
+      p.position.x = u.base.x + mouse.x * (p.position.z + 10) * 0.08;
+      p.rotation.x += 0.003 * u.sp * 3; p.rotation.y += 0.004 * u.sp * 3;
+    });
+
+    renderer.render(scene, camera);
+  }
+  frame();
+
+  // Accent switcher updates 3D colors too
+  window.__setAccent3D = (hex) => {
+    accent.set(hex);
+    glow.color.set(hex); glow.emissive.set(hex);
+    coreLight.color.set(hex); rim.color.set(hex);
+  };
+}
+
+/* ---------- Accent switcher (preview only) ---------- */
+document.querySelectorAll(".switcher button").forEach((b) => b.addEventListener("click", () => {
+  const hex = b.dataset.c;
+  const n = parseInt(hex.slice(1), 16);
+  document.documentElement.style.setProperty("--accent", hex);
+  document.documentElement.style.setProperty("--accent-rgb", `${n >> 16},${(n >> 8) & 255},${n & 255}`);
+  document.documentElement.style.setProperty("--purple", hex);
+  document.querySelectorAll(".switcher button").forEach((x) => x.classList.toggle("on", x === b));
+  window.__setAccent3D && window.__setAccent3D(hex);
+}));
+</script>
+</body>
+</html>
