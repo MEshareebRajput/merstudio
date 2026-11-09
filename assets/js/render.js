@@ -82,7 +82,7 @@
     <div class="container">
       <div class="footer__top">
         <p class="footer__lead">${esc(S.brand.slogan).replace("Big", '<span class="text-purple">Big</span>')}</p>
-        <div><h4>Explore</h4><ul><li><a class="ulink" href="index.html">Home</a></li>${S.menu.map((m) => `<li><a class="ulink" href="${esc(m.page)}">${esc(m.label)}</a></li>`).join("")}</ul></div>
+        <div><h4>Explore</h4><ul><li><a class="ulink" href="index.html">Home</a></li>${S.menu.map((m) => `<li><a class="ulink" href="${esc(m.page)}">${esc(m.label)}</a></li>`).join("")}${(S.referral || {}).enabled === false ? "" : '<li><a class="ulink" href="index.html#refer">Refer a friend</a></li>'}</ul></div>
         <div><h4>Contact</h4><ul><li><a class="ulink" href="${LINKS.email}">${esc(C.email)}</a></li><li><a class="ulink" href="${waLink}" target="_blank" rel="noopener">WhatsApp ${esc(C.whatsappDisplay)}</a></li><li>${esc(S.brand.location)}</li></ul></div>
         <div><h4>Social</h4><ul>${soc.map(([k, u]) => `<li><a class="ulink" href="${esc(u)}" target="_blank" rel="noopener">${k[0].toUpperCase() + k.slice(1)}</a></li>`).join("") || "<li>Coming soon</li>"}</ul></div>
       </div>
@@ -216,6 +216,88 @@
       <div class="info"><small>Reply time</small><b>We reply ${esc(C.replyTime)}</b></div>
     </div>`;
 
+  /* ---------- Trust: promises (always) + numbers, reviews, clients (only when filled in) ---------- */
+  const PROMISES = [
+    ["Fixed quote", "You know the full price before we start. No surprise invoices."],
+    ["Weekly updates", "Progress every week with preview links, so you always see your project."],
+    ["You own it all", "Design files, code and accounts are yours once the project is paid."],
+    ["Here after launch", "Launch support on every project, and we stay reachable on WhatsApp."],
+  ];
+  const initials = (n) => String(n || "?").split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  const stars = (r) => "★★★★★".slice(0, Math.max(0, Math.min(5, Math.round(r || 5))));
+  T.proof = () => {
+    const st = (S.stats || []).filter((s) => s && s.value);
+    const tm = (S.testimonials || []).filter((t) => t && t.text);
+    const cl = (S.clients || []).filter(Boolean);
+    return `
+    <section class="section proof" id="proof">
+      <div class="container">
+        <div class="sec-head sec-head--split">
+          <div><span class="label" data-reveal="fade">Why clients trust us</span><h2 class="h2" data-split style="margin-top:22px">Work you can <span class="text-purple">count on</span>.</h2></div>
+          <p class="lead" data-reveal="fade">How we treat every project, big or small. It's why clients come back and send their friends.</p>
+        </div>
+        ${st.length ? `<div class="proof__stats">${st.map((s) => `<div class="stat" data-reveal="up"><b data-count="${esc(s.value)}">${esc(s.value)}</b><span>${esc(s.label)}</span></div>`).join("")}</div>` : ""}
+        <div class="promises">${PROMISES.map(([h, p], i) => `<div class="promise" data-reveal="up"><span class="promise__n">${String(i + 1).padStart(2, "0")}</span><h3>${h}</h3><p>${p}</p></div>`).join("")}</div>
+        ${tm.length ? `<div class="reviews">${tm.map((t) => `<figure class="review" data-reveal="up"><div class="review__stars" aria-label="${t.rating || 5} out of 5">${stars(t.rating)}</div><blockquote>“${esc(t.text)}”</blockquote><figcaption>${t.photo ? `<img src="${esc(t.photo)}" alt="">` : `<span class="review__av">${esc(initials(t.name))}</span>`}<span><b>${esc(t.name)}</b><small>${esc(t.role || "")}</small></span></figcaption></figure>`).join("")}</div>` : ""}
+      </div>
+      ${cl.length ? `<div class="clients" aria-label="Clients"><div class="clients__track">${[...cl, ...cl].map((c) => `<span>${esc(c)}</span>`).join("")}</div></div>` : ""}
+    </section>`;
+  };
+
+  /* ---------- Founder note (only when a name is filled in) ---------- */
+  T.founder = () => {
+    const f = S.founder || {};
+    if (!f.name) return "";
+    return `
+    <section class="section founder">
+      <div class="container founder__grid">
+        <div class="founder__photo" data-reveal="up">${f.photo ? `<img src="${esc(f.photo)}" alt="${esc(f.name)}">` : `<span>${esc(initials(f.name))}</span>`}</div>
+        <div data-reveal="up">
+          <span class="label">A note from the founder</span>
+          <blockquote class="founder__quote">“${esc(f.message)}”</blockquote>
+          <p class="founder__sig"><b>${esc(f.name)}</b> · ${esc(f.role || "")}</p>
+          <a class="btn btn--sm" href="${waLink}" target="_blank" rel="noopener"><span class="btn__label"><span>Message me on WhatsApp</span><span aria-hidden="true">Message me on WhatsApp</span></span>${ARROW}</a>
+        </div>
+      </div>
+    </section>`;
+  };
+
+  /* ---------- Refer a friend + share + save contact ---------- */
+  const shareUrl = () => S.siteUrl || location.href.split("#")[0].replace(/[^/]*$/, "index.html");
+  T.refer = () => {
+    const R = S.referral || {};
+    if (R.enabled === false) return "";
+    const reward = R.reward ? ` If they start a project with us, we'll thank you with <b>${esc(R.reward)}</b>.` : "";
+    return `
+    <section class="section section--paper refer" id="refer">
+      <div class="container refer__grid">
+        <div>
+          <span class="label" data-reveal="fade">Spread the word</span>
+          <h2 class="h2" data-split style="margin-top:22px">Know someone who needs a <span class="text-purple">great website</span>?</h2>
+          <p class="lead" data-reveal="fade" style="margin-top:22px">Not ready for a project yourself? Share MER with a friend, colleague or client who needs a website, store, app, brand or videos.${reward}</p>
+          <div class="share" data-reveal="up">
+            <a class="share__btn share__btn--wa" data-share="whatsapp" href="#" target="_blank" rel="noopener"><i>✆</i>WhatsApp</a>
+            <a class="share__btn" data-share="linkedin" href="#" target="_blank" rel="noopener"><i>in</i>LinkedIn</a>
+            <a class="share__btn" data-share="facebook" href="#" target="_blank" rel="noopener"><i>f</i>Facebook</a>
+            <a class="share__btn" data-share="x" href="#" target="_blank" rel="noopener"><i>𝕏</i>X</a>
+            <button class="share__btn" type="button" data-share="copy"><i>⧉</i><span>Copy link</span></button>
+            <button class="share__btn" type="button" data-share="native" hidden><i>↗</i>More</button>
+          </div>
+          <button class="vcard" type="button" data-vcard data-reveal="up"><span class="vcard__icon">${icon("app")}</span><span><b>Save our contact</b><small>Add MER to your phone, so it's easy to share later</small></span><i>↓</i></button>
+        </div>
+        <form class="refer__card" data-refer novalidate data-reveal="up">
+          <h3>Introduce a friend</h3>
+          <p>We'll reach out politely and mention you sent them. No spam, ever.</p>
+          <div class="ct-row2"><input class="ct-in" name="yname" placeholder="Your name" autocomplete="name"><input class="ct-in" name="yemail" type="email" placeholder="Your email" autocomplete="email"></div>
+          <div class="ct-row2"><input class="ct-in" name="fname" placeholder="Friend's name"><input class="ct-in" name="fcontact" placeholder="Friend's email or WhatsApp"></div>
+          <textarea class="ct-in" name="note" rows="2" placeholder="What do they need? (optional)"></textarea>
+          <div class="ct-foot"><span class="ct-note">Only share contacts of people who are happy to hear from us.</span><button class="ct-btn" type="submit">Send introduction ↗</button></div>
+          <p class="refer__done" data-refer-done hidden></p>
+        </form>
+      </div>
+    </section>`;
+  };
+
   /* ---------- Render ---------- */
   // Whole blocks: <div data-render="header"></div> etc. are replaced
   $$("[data-render]").forEach((el) => {
@@ -224,6 +306,7 @@
     let html = "";
     switch (kind) {
       case "header": case "footer": case "contact": case "clock": case "process": case "contactInfo":
+      case "proof": case "founder": case "refer":
         el.outerHTML = T[kind](); return;
       case "projects": {
         let list = S.projects;
@@ -253,4 +336,87 @@
 
   // Contact page: open the booking tab when the URL ends with #book
   window.MER_LINKS = LINKS;
+
+  /* ---------- Share buttons ---------- */
+  const R = S.referral || {};
+  const url = shareUrl();
+  const text = (R.shareText || "Have a look at MER: ") + url;
+  const SHARE = {
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(text)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(R.shareText || "Have a look at MER")}&url=${encodeURIComponent(url)}`,
+  };
+  $$("[data-share]").forEach((b) => {
+    const k = b.getAttribute("data-share");
+    if (SHARE[k]) b.setAttribute("href", SHARE[k]);
+    if (k === "native" && navigator.share) {
+      b.hidden = false;
+      b.addEventListener("click", () => navigator.share({ title: `${S.brand.name}: ${S.brand.tagline}`, text: R.shareText, url }).catch(() => {}));
+    }
+    if (k === "copy") b.addEventListener("click", async () => {
+      const label = b.querySelector("span");
+      try { await navigator.clipboard.writeText(url); label.textContent = "Link copied ✓"; }
+      catch (e) { window.prompt("Copy this link:", url); }
+      setTimeout(() => (label.textContent = "Copy link"), 2200);
+    });
+  });
+
+  /* ---------- Save contact (downloads a .vcf card for phones) ---------- */
+  $$("[data-vcard]").forEach((b) => b.addEventListener("click", () => {
+    const lines = [
+      "BEGIN:VCARD", "VERSION:3.0",
+      `FN:${S.brand.name} · ${S.brand.tagline}`, `ORG:${S.brand.name}`,
+      C.phone ? `TEL;TYPE=CELL:${C.phone}` : "", C.whatsappDisplay && C.whatsappDisplay !== C.phone ? `TEL;TYPE=WORK:${C.whatsappDisplay}` : "",
+      C.email ? `EMAIL:${C.email}` : "", `URL:${url}`, C.city ? `ADR:;;;${C.city};;;` : "",
+      `NOTE:${S.brand.description}`, "END:VCARD",
+    ].filter(Boolean).join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([lines], { type: "text/vcard" }));
+    a.download = `${S.brand.name}-contact.vcf`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }));
+
+  /* ---------- Refer form ---------- */
+  $$("[data-refer]").forEach((f) => f.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const v = (n) => f.elements[n].value.trim();
+    const need = ["yname", "fname", "fcontact"];
+    let bad = null;
+    need.forEach((n) => { const ok = v(n).length > 1; f.elements[n].classList.toggle("bad", !ok); if (!ok && !bad) bad = f.elements[n]; });
+    if (bad) return bad.focus();
+    const body = `Referral from: ${v("yname")} (${v("yemail") || "no email"})\nFriend: ${v("fname")}\nFriend's contact: ${v("fcontact")}\nNeeds: ${v("note") || "-"}`;
+    const done = f.querySelector("[data-refer-done]");
+    if (S.settings.formEndpoint) {
+      try {
+        const r = await fetch(S.settings.formEndpoint, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ type: "referral", referrer: v("yname"), referrerEmail: v("yemail"), friend: v("fname"), friendContact: v("fcontact"), note: v("note") }) });
+        if (!r.ok) throw new Error(r.status);
+        done.textContent = `Thank you, ${v("yname").split(" ")[0]}! 🙌 We'll reach out to ${v("fname")} and let them know you sent them.`;
+      } catch (err) { done.textContent = `Sorry, that didn't send. Please email ${C.email}.`; }
+    } else {
+      location.href = `mailto:${C.email}?subject=${encodeURIComponent("Referral: " + v("fname"))}&body=${encodeURIComponent(body)}`;
+      done.textContent = `Thank you, ${v("yname").split(" ")[0]}! 🙌 Your email app opened with the introduction. Press send and we'll take it from there.`;
+    }
+    done.hidden = false; f.reset();
+  }));
+
+  /* ---------- Count-up for numbers in the proof section ---------- */
+  const counters = $$("[data-count]");
+  if (counters.length && "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      io.unobserve(en.target);
+      const raw = en.target.getAttribute("data-count"), m = raw.match(/[\d.]+/);
+      if (!m) return;
+      const end = parseFloat(m[0]), dec = (m[0].split(".")[1] || "").length, t0 = performance.now();
+      const step = (t) => {
+        const p = Math.min(1, (t - t0) / 1400), val = (end * (1 - Math.pow(1 - p, 3))).toFixed(dec);
+        en.target.textContent = raw.replace(m[0], val);
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }), { threshold: 0.6 });
+    counters.forEach((c) => io.observe(c));
+  }
 })();

@@ -150,4 +150,50 @@ window.SITE = {
     { q: "Can I update the website myself?", a: "Yes. We set up an easy way to update text, images and products yourself, and show you how during handover." },
     { q: "Do you make UGC videos and do photo shoots?", a: "Yes. We produce UGC-style videos, AI-edited reels and ads, and product and lifestyle photo shoots for websites, stores and social media." },
   ],
+
+  /* =========================================================================
+     TRUST & REFERRALS: this is what makes visitors trust you and tell friends.
+     IMPORTANT: only add REAL numbers, reviews and clients. Empty lists are
+     hidden automatically, so nothing fake ever shows on the website.
+     ========================================================================= */
+
+  /* ---------- Numbers (shown in the "proof" section). Leave [] to hide. ----------
+     Example: { value: "40+", label: "Projects delivered" }                       */
+  stats: [
+    // { value: "40+", label: "Projects delivered" },
+    // { value: "12", label: "Countries served" },
+    // { value: "4.9★", label: "Average client rating" },
+    // { value: "24h", label: "Average reply time" },
+  ],
+
+  /* ---------- Client reviews. Leave [] to hide. Ask happy clients for 2–3 lines. ----------
+     photo: optional, e.g. "assets/people/ali.jpg"                                */
+  testimonials: [
+    // { name: "Ali Khan", role: "Founder, Brand Name", text: "MER delivered our store in 3 weeks. Sales went up from the first month.", photo: "", rating: 5 },
+  ],
+
+  /* ---------- Clients / brands you've worked with (names, shown as a moving strip). Leave [] to hide. ---------- */
+  clients: [
+    // "Brand One", "Brand Two", "Brand Three",
+  ],
+
+  /* ---------- Founder note (a personal message builds trust). Leave name "" to hide. ---------- */
+  founder: {
+    name: "",                 // e.g. "Muhammad Eshareeb"
+    role: "Founder, MER",
+    photo: "",                // e.g. "assets/people/founder.jpg"
+    message: "Every project we take on gets my personal attention. If you're not happy with something, message me directly and I'll make it right.",
+  },
+
+  /* ---------- Refer a friend ---------- */
+  referral: {
+    enabled: true,
+    // What you give for a referral that becomes a project. Leave "" to not mention a reward.
+    reward: "",               // e.g. "10% of the first project" or "a free month of website care"
+    // Message people send when they share your website:
+    shareText: "I found a great creative studio for websites, Shopify stores, apps, branding and video. Have a look: ",
+  },
+
+  /* ---------- Public website address (used in share links). Leave "" to use the current page address. ---------- */
+  siteUrl: "",
 };

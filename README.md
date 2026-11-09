@@ -46,6 +46,7 @@
 - **Horizontal process:** four steps that scroll sideways on desktop
 - **Portfolio with filters:** projects grouped by websites, e-commerce, apps, branding, video and photo
 - **Contact with video call booking:** send a message, or pick a day and time for a free Google Meet / Zoom call
+- **Trust & referrals:** promises, real stats, reviews and client logos (shown only when filled in), a founder note, one-tap sharing (WhatsApp, LinkedIn, Facebook, X, copy link), a "Save our contact" card for phones and a refer-a-friend form
 - **Offline chatbot:** 2,100+ question phrasings in English and Roman Urdu, matched in the browser
 - **Smooth everything:** Lenis smooth scrolling, GSAP ScrollTrigger animations, custom cursor, rolling-text buttons
 - **Responsive:** designed mobile-first, with a full-screen mobile menu
@@ -106,6 +107,12 @@ All content lives in **`site-content.js`**. Open it in any text editor (even Not
 | `projects` | Portfolio items (add `image: "assets/work/name.jpg"` for real screenshots) |
 | `models` | Ways to work (fixed project, monthly, dedicated team) |
 | `faq` | Questions and answers (FAQ page, home page and chatbot) |
+| `stats` | Real numbers (projects, countries, rating), with a count-up animation. Hidden if empty |
+| `testimonials` | Real client reviews. Hidden if empty |
+| `clients` | Brand names as a moving strip. Hidden if empty |
+| `founder` | A personal note with photo. Hidden until you add a name |
+| `referral` | "Refer a friend" section: share text and optional reward |
+| `siteUrl` | Your public website address, used in share links |
 
 Example: adding a project
 
