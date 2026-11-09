@@ -187,7 +187,7 @@ window.SITE = {
 
   /* ---------- Refer a friend ---------- */
   referral: {
-    enabled: true,
+    enabled: false,          // the "Refer a friend" section is switched off
     // What you give for a referral that becomes a project. Leave "" to not mention a reward.
     reward: "",               // e.g. "10% of the first project" or "a free month of website care"
     // Message people send when they share your website:

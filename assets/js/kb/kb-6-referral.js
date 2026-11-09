@@ -1,34 +1,31 @@
 /* =====================================================================
-   MER chatbot knowledge base, part 6: referrals, sharing, trust.
-   The reward and link come from site-content.js (referral + siteUrl).
+   MER chatbot knowledge base, part 6: sharing, "not ready yet", trust.
+   The website link comes from site-content.js (siteUrl).
    ===================================================================== */
 (() => {
   const S = window.SITE || {};
-  const R = S.referral || {};
   const url = S.siteUrl || location.href.split("#")[0].replace(/[^/]*$/, "index.html");
-  const reward = R.reward ? ` If they start a project with us, we'll thank you with **${R.reward}**.` : "";
-  const rewardUr = R.reward ? ` Agar woh project shuru karein to hum shukriye mein **${R.reward}** denge.` : "";
 
   window.MER_KB = (window.MER_KB || "") + `
 ## refer
-q: refer a friend | referral | can i refer someone | recommend you to a friend | i know someone who needs a website | how can i recommend mer | referral program | do you give a referral bonus | referral reward | commission for referral | introduce a client | kisi ko refer karna hai | dost ko recommend karna | referral bonus milta hai | kisi aur ko bhejna hai | mere dost ko website chahiye
-a: That's really kind! 🙌 You can [introduce a friend here](#refer) (we'll mention you sent them) or share our website on WhatsApp in one tap.${reward}
-ur: Bohot meherbani! 🙌 Aap [yahan dost ka taaruf karwa dein](#refer) (hum batayenge ke aap ne bheja), ya ek click mein WhatsApp par website share karein.${rewardUr}
+q: refer a friend | referral | can i refer someone | recommend you to a friend | i know someone who needs a website | how can i recommend mer | referral program | do you give a referral bonus | introduce a client | kisi ko refer karna hai | dost ko recommend karna | referral bonus milta hai | mere dost ko website chahiye
+a: That's really kind, thank you! 🙌 Just send them our website link (${url}) or our WhatsApp {WHATSAPP}, and they can [book a free call](#book) anytime.
+ur: Bohot meherbani! 🙌 Unhe hamari website ka link (${url}) ya WhatsApp {WHATSAPP} bhej dein, woh kabhi bhi [free call book](#book) kar sakte hain.
 
 ## share-site
 q: share your website | send me your link | how do i share your site | share mer | your website link | website address | link bhejo | website ka link do | share kaise karun | apni website ka link
-a: Here's our link to share: ${url} 🔗 You can also use the share buttons in the [Spread the word](#refer) section (WhatsApp, LinkedIn, Facebook, X or copy link).
-ur: Ye raha hamara link: ${url} 🔗 [Spread the word](#refer) section mein WhatsApp, LinkedIn aur Facebook ke share buttons bhi hain.
+a: Here's our link: ${url} 🔗
+ur: Ye raha hamara link: ${url} 🔗
 
 ## save-contact
 q: save your contact | vcard | contact card | add you to my phone | save your number | business card | number save karna hai | contact save karna | aapka contact card
-a: Tap **[Save our contact](#refer)** and MER is added to your phone in one click, so it's easy to share with friends later. 📇
-ur: **[Save our contact](#refer)** dabayein, MER ek click mein aapke phone mein save ho jaayega, taake baad mein doston ko bhej sakein. 📇
+a: Save us as: **MER, Creative & Digital Studio**, WhatsApp {WHATSAPP}, email {EMAIL}. 📇
+ur: Is naam se save karein: **MER, Creative & Digital Studio**, WhatsApp {WHATSAPP}, email {EMAIL}. 📇
 
 ## not-ready
 q: im not ready yet | maybe later | just looking | just browsing | not now but maybe in future | abhi zaroorat nahi | bas dekh raha hun | baad mein karwaunga | abhi project nahi hai
-a: No problem at all! 😊 Feel free to look around. If you know anyone who needs a website, store, app or videos, [share us with them](#refer). And [save our contact](#refer) for whenever you're ready.
-ur: Koi baat nahi! 😊 Aaram se dekhein. Kisi ko website, store, app ya videos chahiye hon to [unhe share kar dein](#refer), aur [hamara contact save kar lein](#refer).
+a: No problem at all! 😊 Take your time and look around our [work](work.html). Whenever you're ready, a [free call](#book) or a WhatsApp message to {WHATSAPP} is all it takes.
+ur: Koi baat nahi! 😊 Aaram se hamara [kaam](work.html) dekhein. Jab tayyar hon, [free call](#book) ya {WHATSAPP} par WhatsApp kar dein.
 
 ## trust
 q: why should i trust you | are you reliable | are you legit | is mer trustworthy | can i trust this agency | is this agency real | aap par bharosa kaise karun | kya ye agency theek hai | reliable ho | legit ho
